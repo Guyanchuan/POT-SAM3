@@ -1,4 +1,4 @@
-# POTSAM3 (Anonymous Release)
+# POTSAM3
 
 ## Prerequisites
 
@@ -12,7 +12,6 @@
 
 ```bash
 conda create -n potsam3 python=3.12
-conda deactivate
 conda activate potsam3
 ```
 
