@@ -1,0 +1,7 @@
+numpy
+scipy
+Pillow
+PyYAML
+tqdm
+matplotlib
+opencv-python

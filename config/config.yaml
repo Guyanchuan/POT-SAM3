@@ -1,0 +1,176 @@
+# =========================
+# Data
+# =========================
+# NOTE: all paths are relative to this file (config/config.yaml).
+train_image_dir: ../data/lucchi/im
+train_label_dir: ../data/lucchi/gt
+test_image_dir: ../data/lucchi/im
+test_label_dir: ../data/lucchi/gt
+# Foreground labels in GT.
+class_label_values: [255]
+
+
+# =========================
+# SAM3 runtime
+# =========================
+sam3_checkpoint: ../checkpoints/sam3.pt
+bpe_path: ../checkpoints/bpe_simple_vocab_16e6.txt.gz
+device: cuda
+use_autocast: true
+amp_dtype: bfloat16
+compile: false
+
+
+# =========================
+# Training
+# =========================
+train_epochs: 1000
+print_every: 10
+
+lr: 0.1
+lr_schedule: cosine
+lr_warmup_epochs: 20
+lr_warmup_start_ratio: 0.1
+lr_min_ratio: 0.001
+lr_plateau_shorten: true
+
+batch_size: 2
+grad_accum_steps: 1
+grad_clip_norm: 100.0
+
+# 0 => use all training samples
+train_n_shot: 1
+train_n_shot_seed: 2026
+
+# one-image debug
+overfit_single: false
+
+# best-token/early-stop based on train query-main loss
+per_class_patience: 100
+per_class_min_delta: 0.001
+per_class_min_epochs: 100
+
+
+# =========================
+# Token
+# =========================
+init_from_first_image: true
+token_init_modes: [cls, prompt_mean, prompt_max]
+token_init_multiplier: 1
+
+token_ema: false
+token_ema_decay: 0.99
+token_ema_warmup_steps: 10
+
+
+# =========================
+# Query/semantic supervision
+# =========================
+query_main_weight: 1.0
+aux_semantic_weight: 0.5
+
+# detector path vs find path in training
+train_use_detector_path: false
+
+# shared query score threshold for train/infer query filtering
+query_score_threshold: 0.5
+
+# two-stage matching thresholds
+train_match_iou_threshold: 0.8
+train_unmatch_iou_threshold: 0.5
+
+instance_score_weight: 1.0
+instance_mask_focal_weight: 1.0
+instance_mask_dice_weight: 0.5
+query_focal_alpha: 0.8
+query_focal_gamma: 2.0
+
+semantic_loss_weight: 1.0
+semantic_dice_weight: 0.5
+semantic_use_focal: true
+semantic_focal_alpha: 0.8
+semantic_focal_gamma: 2.0
+semantic_downsample: true
+
+# semantic-head inverse-consistency regularization
+inv_consistency_weight: 0.1
+
+# token diversity regularization
+token_reg_weight: 0.1
+
+
+# ========================= 
+# Query prior (gray/std)
+# =========================
+query_prior_enabled: false
+query_prior_std_ksize: 9
+query_prior_min_pixels: 4
+query_prior_n_sigma: 3.0
+eps: 1.0e-6
+
+
+# =========================
+# Augmentation
+# =========================
+aug_seed: 0
+aug_prob_hflip: 0.5
+aug_prob_vflip: 0.5
+aug_prob_rot90: 0.5
+aug_prob_blur: 0.5
+aug_blur_sigma: 0.5
+aug_prob_contrast: 0.5
+aug_contrast_min: 0.9
+aug_contrast_max: 1.1
+
+
+# =========================
+# Inference
+# =========================
+output_dir: ../outputs
+overlay_alpha: 0.45
+
+infer_use_detector_path: false
+infer_logit_threshold: 0.5
+infer_query_topk: 0
+infer_query_lcc: true
+infer_det_nms_thresh: 0.0
+speckle_min_area: 400
+
+# query-grid visualization cap in trainer
+query_grid_max_queries: 10
+
+
+# =========================
+# Tracking (detector + tracker)
+# =========================
+track_enable_auto_detection: true
+
+# SAM3 detector/tracker runtime thresholds.
+# null => keep SAM3 model defaults.
+track_score_threshold_detection: 0.5
+track_det_nms_thresh: 0.5
+track_new_det_thresh: 0.5
+track_assoc_iou_thresh: 0.5
+track_trk_assoc_iou_thresh: 0.5
+track_suppress_overlapping_threshold: 0.5
+
+# cap detector NMS candidates to avoid OOM
+track_nms_max_candidates: 128
+
+# remove obj when current per-frame score < threshold
+track_remove_obj_score_threshold: 0.8
+
+# visualization
+track_gt_boundary_width: 2
+track_save_binary_masks: true
+track_binary_mask_dirname: "binary_masks"
+
+# token checkpoint selection for track.py
+track_token_path: ""
+track_token_run_dir: ""
+track_token_key: ""
+track_token_text_placeholder: "token"
+
+# optional preprocessed frame directory for tracker input.
+# when non-empty, track.py reuses this directory directly (no new frame export).
+track_preprocessed_frames_dir: ""
